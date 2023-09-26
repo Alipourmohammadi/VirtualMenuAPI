@@ -5,10 +5,10 @@ namespace VirtualMenuAPI.Models{
   }
   public class Order
   {
-    public int Id { get; set; }
+    public int? Id { get; private set; }
     public DateTime SubmitDate { get; private set; }
-    public int? TableNumber { get; private set; }
+    public int TableNumber { get; private set; } = 2;
     public ServeType ServeType { get; private set; } = ServeType.Present;
-    public List<Product> Items { get;  set; } = new();
+    public List<OrderItems> Items { get;  set; } = new();
   }
 }

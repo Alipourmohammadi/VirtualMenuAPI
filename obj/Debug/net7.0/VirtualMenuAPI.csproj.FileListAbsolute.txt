@@ -31,3 +31,4 @@ C:\projects\digi-menu\code-source\VirtualMenuAPI\obj\Debug\net7.0\refint\Virtual
 C:\projects\digi-menu\code-source\VirtualMenuAPI\obj\Debug\net7.0\VirtualMenuAPI.pdb
 C:\projects\digi-menu\code-source\VirtualMenuAPI\obj\Debug\net7.0\VirtualMenuAPI.genruntimeconfig.cache
 C:\projects\digi-menu\code-source\VirtualMenuAPI\obj\Debug\net7.0\ref\VirtualMenuAPI.dll
+C:\projects\digi-menu\code-source\VirtualMenuAPI\bin\Debug\net7.0\System.Net.WebSockets.WebSocketProtocol.dll
