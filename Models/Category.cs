@@ -1,18 +1,14 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace VirtualMenuAPI.Models
 {
   public class Category
   {
-    public int Id { get; private set; }
-    public string Title { get; private set; } = string.Empty;
-    public string Image { get; private set; } = string.Empty;
-    public List<Product> Products {get; private set; }
-    public Category(int id, string title, string image)
-    {
-      Id = id;
-      Title = title;
-      Image = image;
-    }
+    public int Id { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Image { get; set; } = string.Empty;
+    [JsonIgnore]
+    public List<Product> Products { get; set; } = new();
   }
 }

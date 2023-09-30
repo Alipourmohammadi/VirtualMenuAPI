@@ -1,14 +1,16 @@
-namespace VirtualMenuAPI.Models{
-  public enum ServeType{
+namespace VirtualMenuAPI.Models
+{
+  public enum ServeType
+  {
     Present,
     TakAway
   }
   public class Order
   {
-    public int? Id { get; private set; }
-    public DateTime SubmitDate { get; private set; }
-    public int TableNumber { get; private set; } = 2;
-    public ServeType ServeType { get; private set; } = ServeType.Present;
-    public List<OrderItems> Items { get;  set; } = new();
+    public int Id { get; set; }
+    public DateTime SubmitDate { get; set; } = DateTime.Now;
+    public int TableNumber { get; set; }
+    public ServeType ServeType { get; set; } = ServeType.Present;
+    public List<OrderItem> Items { get; set; } = new();
   }
 }

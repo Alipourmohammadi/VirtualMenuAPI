@@ -1,25 +1,20 @@
-
 using System.Net.WebSockets;
 using System.Text;
-using System.Text.Json;
-using VirtualMenuAPI.Repository;
+using VirtualMenuAPI.Data;
+
 
 // namespace VirtualMenuAPI.Handler;
 public class WebSocketHandler
 {
-    private WebSocket _webSocket;
-    private readonly IOrderRepository _orderRepo;
-
-    public WebSocketHandler(IOrderRepository orderRepo)
-    {
-        _orderRepo = orderRepo;
-
-    }
+    private WebSocket _webSocket ;
+    // public WebSocketHandler(WebSocket webSocket)
+    // {
+    //     _webSocket = webSocket;
+    // }
     public void InitializeWebSocket(WebSocket webSocket)
     {
         _webSocket = webSocket;
     }
-
     public async Task SendDataAsync(string data)
     {
         if (_webSocket.State == WebSocketState.Open)
@@ -48,7 +43,6 @@ public class WebSocketHandler
             {
                 var receivedData = Encoding.UTF8.GetString(buffer, 0, result.Count);
                 Console.WriteLine($"Received: {receivedData}");
-                await SendDataAsync(JsonSerializer.Serialize(_orderRepo.GetAllOrders()));
             }
             else if (result.MessageType == WebSocketMessageType.Close)
             {

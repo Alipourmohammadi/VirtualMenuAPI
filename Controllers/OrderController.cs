@@ -1,39 +1,40 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using VirtualMenuAPI.Data;
+
 // using VirtualMenuAPI.Handler;
 using VirtualMenuAPI.Models;
-using VirtualMenuAPI.Repository;
 
 [ApiController]
 [Route("[controller]")]
 public class OrderController : ControllerBase
 {
-  private readonly IOrderRepository _orderRepo;
-  private readonly WebSocketHandler _webSocketHandler; // Inject WebSocketHandler
+  private readonly DataContext _dataContext;
+  private readonly WebSocketHandler _webSocketHandler;
 
-  public OrderController(IOrderRepository orderRepo, WebSocketHandler webSocketHandler)
+  public OrderController(DataContext dataContext, WebSocketHandler webSocketHandler)
   {
-    _orderRepo = orderRepo;
+    _dataContext = dataContext;
     _webSocketHandler = webSocketHandler;
   }
 
   [HttpGet]
-  public List<Order> GetOrders()
+  public async Task<List<Order>> GetOrders()
   {
-    return _orderRepo.GetAllOrders();
+    return await _dataContext.Orders.Include(x=>x.Items).ToListAsync();
   }
   [HttpPost]
-  public async void PostOrder(Order order)
+  public async Task<ActionResult<Order>> PostOrder(Order order)
   {
-    // Save the order to the repository
-    var savedOrders = _orderRepo.SetOrder(order);
+    if (order is null)
+      return NotFound("Invalid Data");
+    await _dataContext.Orders.AddAsync(order);
+    _dataContext.SaveChanges();
+    var savedOrders = await _dataContext.Orders.ToListAsync();
+    await _webSocketHandler.SendDataAsync(JsonSerializer.Serialize(savedOrders, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
 
-    // Notify WebSocket clients about the new order
-    // var orderNotification = $"New order created: {order.Id}";
-
-    await _webSocketHandler.SendDataAsync(JsonSerializer.Serialize(savedOrders));
-
-    // return savedOrders;
+    return Ok("New Order Added");
   }
 
 }

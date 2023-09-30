@@ -1,6 +1,7 @@
 
 using Microsoft.AspNetCore.Mvc;
-using VirtualMenuAPI.Repository;
+using Microsoft.EntityFrameworkCore;
+using VirtualMenuAPI.Data;
 using VirtualMenuAPI.ViewModels;
 
 namespace VirtualMenuAPI.Controller
@@ -9,17 +10,20 @@ namespace VirtualMenuAPI.Controller
   [Route("[controller]")]
   public class MenuDataController : ControllerBase
   {
-    private MenuData Data;
-    private readonly IOrderRepository _orderRepo;
-    public MenuDataController(IOrderRepository orderRepo)
+    private readonly DataContext _dataContext;
+
+    public MenuDataController(DataContext dataContext)
     {
-      Data = new MenuData();
-      _orderRepo = orderRepo;
+      _dataContext = dataContext;
     }
     [HttpGet]
-    public MenuData GetMenuData()
+    public async Task<MenuDataDto> GetMenuData()
     {
-      return Data.GetMenuData(_orderRepo);
+      return new MenuDataDto
+      (
+        await _dataContext.Categories.ToListAsync(),
+        await _dataContext.Products.ToListAsync()
+      );
     }
   }
 }
