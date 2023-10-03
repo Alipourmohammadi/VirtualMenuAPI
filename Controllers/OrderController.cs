@@ -27,7 +27,7 @@ public class OrderController : ControllerBase
   [HttpPost]
   public async Task<ActionResult<Order>> PostOrder(Order order)
   {
-    if (order is null)
+    if (!ModelState.IsValid)
       return NotFound("Invalid Data");
     await _dataContext.Orders.AddAsync(order);
     _dataContext.SaveChanges();

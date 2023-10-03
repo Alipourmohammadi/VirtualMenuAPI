@@ -2,16 +2,56 @@
 using System.Net.WebSockets;
 using VirtualMenuAPI.Data;
 using Microsoft.EntityFrameworkCore;
-// using VirtualMenuAPI.Handler;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using VirtualMenuAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 // builder.WebHost.UseUrls("http://192.168.1.161:5058");
-// Add services to the container.
-// builder.Services.AddSingleton<OrderRepository>();
+
 builder.Services.AddDbContext<DataContext>(options => { options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")); });
 builder.Services.AddSingleton<WebSocketHandler>();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
+// builder.Services.AddIdentity<Manager, IdentityRole>().AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
+var tokenValidationParameters = new TokenValidationParameters()
+{
+    ValidateIssuerSigningKey = true,
+    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration.GetSection("JWT:Secret").Value!)),
+
+    ValidateIssuer = true,
+    ValidIssuer = builder.Configuration.GetSection("JWT:Issuer").Value,
+
+    ValidateAudience = false,
+
+    ValidateLifetime = true,
+    ClockSkew = TimeSpan.Zero
+};
+builder.Services.AddSingleton(tokenValidationParameters);
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration.GetSection("JWT:Secret").Value!)),
+
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration.GetSection("JWT:Issuer").Value,
+
+        ValidateAudience = false,
+
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    }; ;
+});
 // builder.Services.AddSingleton<IOrderRepository, OrderRepository>();
 
 builder.Services.AddControllers();
