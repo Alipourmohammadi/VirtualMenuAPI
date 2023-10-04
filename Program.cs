@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using VirtualMenuAPI.Models;
+using VirtualMenuAPI.Services.CustomerService;
+using VirtualMenuAPI.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 // builder.WebHost.UseUrls("http://192.168.1.161:5058");
@@ -14,7 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DataContext>(options => { options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")); });
 builder.Services.AddSingleton<WebSocketHandler>();
 
-// builder.Services.AddIdentity<Manager, IdentityRole>().AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
+
+builder.Services.AddIdentity<Customer, IdentityRole>().AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
 var tokenValidationParameters = new TokenValidationParameters()
 {
     ValidateIssuerSigningKey = true,
@@ -53,6 +56,10 @@ builder.Services.AddAuthentication(options =>
     }; ;
 });
 // builder.Services.AddSingleton<IOrderRepository, OrderRepository>();
+
+//Services
+builder.Services.AddScoped<ICustomerService>();
+builder.Services.AddScoped<ICustomerAuthService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

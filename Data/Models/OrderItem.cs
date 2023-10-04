@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace VirtualMenuAPI.Models
 {
   public class OrderItem
@@ -7,5 +5,6 @@ namespace VirtualMenuAPI.Models
     public int Id { get; set; }
     public string Title { get; set; } = string.Empty;
     public int Count { get; set; }
+    public int Price { get; set; }
   }
 }

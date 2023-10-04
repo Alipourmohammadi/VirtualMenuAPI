@@ -82,3 +82,5 @@ C:\projects\digi-menu\code-source\VirtualMenuAPI\bin\Debug\net7.0\Microsoft.AspN
 C:\projects\digi-menu\code-source\VirtualMenuAPI\bin\Debug\net7.0\Microsoft.Extensions.Identity.Core.dll
 C:\projects\digi-menu\code-source\VirtualMenuAPI\bin\Debug\net7.0\Microsoft.Extensions.Identity.Stores.dll
 C:\projects\digi-menu\code-source\VirtualMenuAPI\bin\Debug\net7.0\Microsoft.Extensions.Options.dll
+C:\projects\digi-menu\code-source\VirtualMenuAPI\bin\Debug\net7.0\Mapster.dll
+C:\projects\digi-menu\code-source\VirtualMenuAPI\bin\Debug\net7.0\Mapster.Core.dll

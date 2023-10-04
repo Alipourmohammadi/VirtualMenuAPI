@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
+using System.Data.Common;
+using Microsoft.AspNetCore.Identity;
 
 namespace VirtualMenuAPI.Models
 {
-  public class Customer
+  public class Customer :IdentityUser
   {
-    [Key]
-    public int Id { get; set; }
     public Guid Identity { get; set; }
     public DateTime DateCreated { get; set; }= DateTime.Now;
     [Required]
