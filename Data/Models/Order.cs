@@ -17,14 +17,20 @@ namespace VirtualMenuAPI.Models
   public class Order
   {
     public int Id { get; set; }
+
     public DateTime SubmitDate { get; set; } = DateTime.Now;
+
+    [Range(0, 50, ErrorMessage = "Out of Range!")]
     public int TableNumber { get; set; }
+
+    [Range(0, 1, ErrorMessage = "Out of Range!")]
     public ServeType ServeType { get; set; } = ServeType.Present;
-    public OrderState OrderState { get; set; } 
+
+    [Range(0, 2, ErrorMessage = "Out of Range!")]
+    public OrderState OrderState { get; set; }
     [Required]
     public List<OrderItem> Items { get; set; } = new();
     [JsonIgnore]
-    [Required]
     public Customer Customer { get; set; } = new();
   }
 }
