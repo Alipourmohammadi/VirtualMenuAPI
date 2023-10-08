@@ -18,11 +18,11 @@ namespace VirtualMenuAPI.Services.CustomerService
       _context = context;
     }
 
-    public async Task<bool> SetOrder(OrderDataIN order, string userId)
+    public async Task<CustomerOrderDto> SetOrder(OrderDataIN order, string userId)
     {
       var customer = await _context.Customers.FirstOrDefaultAsync(x => x.Identity.ToString() == userId);
       if (customer == null)
-        return false;
+        throw new Exception("Customer Not Found");
       var newOrder = new Order()
       {
         TableNumber = order.TableNumber,
@@ -32,7 +32,8 @@ namespace VirtualMenuAPI.Services.CustomerService
       customer.Orders.Add(newOrder);
       _context.Customers.Update(customer);
       await _context.SaveChangesAsync();
-      return true;
+      //var orders = await _context.Customers.FirstOrDefaultAsync(x => x.Id == customer.Id);
+      return customer.Orders.FirstOrDefault(x=>x.Id == newOrder.Id).Adapt<CustomerOrderDto>();
     }
     public async Task<List<CustomerOrderDto>> GetCustomerOrderData(string userId)
     {

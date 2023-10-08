@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VirtualMenuAPI.Data.Helpers;
+using VirtualMenuAPI.Services;
 using VirtualMenuAPI.Services.CustomerService;
 using VirtualMenuAPI.ViewModels;
 
@@ -10,13 +11,15 @@ namespace VirtualMenuAPI.Controllers
   [Route("[controller]")]
   [Authorize(Roles = UserRoles.Customer)]
 
-  public class CustomerDataController : ControllerBase
+  public class CustomerController : ControllerBase
   {
     private readonly ICustomerService _customerService;
+    private readonly IOrderQueueService _orderQueueService;
 
-    public CustomerDataController(ICustomerService customerService)
+    public CustomerController(ICustomerService customerService, IOrderQueueService orderQueueService)
     {
       _customerService = customerService;
+      _orderQueueService = orderQueueService;
     }
 
     [HttpPost("order")]
@@ -26,12 +29,17 @@ namespace VirtualMenuAPI.Controllers
         return BadRequest("Please Provide Valid Field");
       var userId = User.FindFirst("Identity")?.Value;
       if (userId is null)
-        return NotFound();
-      var result = await _customerService.SetOrder(order, userId);
-      if (result)
+        return NotFound("user not found");
+      try
+      {
+        var result = await _customerService.SetOrder(order, userId);
+        _orderQueueService.EnqueueMessage(result);
         return Ok("Order Set");
-      else
-        return BadRequest("couldn't set the Order");
+      }
+      catch (Exception ex)
+      {
+        return NotFound(ex.Message);
+      }
     }
     [HttpGet]
     public async Task<IActionResult> GetCustomerOrderData()

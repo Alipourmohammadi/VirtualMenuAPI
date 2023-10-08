@@ -36,9 +36,8 @@ namespace VirtualMenuAPI.Controller
       {
         var filePath = Path.Combine(_assetsFolderPath, imageName);
         if (!System.IO.File.Exists(filePath))
-        {
           return NotFound();
-        }
+        
         var contentType = GetContentType(imageName);
 
         if (contentType == null)
@@ -62,8 +61,6 @@ namespace VirtualMenuAPI.Controller
           return "image/jpeg";
         case ".png":
           return "image/png";
-        case ".gif":
-          return "image/gif";
         default:
           return null;
       }

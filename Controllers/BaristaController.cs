@@ -8,7 +8,7 @@ namespace VirtualMenuAPI.Controllers
 {
   [ApiController]
   [Route("[controller]")]
-  [Authorize(Roles = UserRoles.Barista)]
+  //[Authorize(Roles = UserRoles.Barista)]
   public class BaristaController : ControllerBase
   {
     private readonly IBaristaService _baristaService;

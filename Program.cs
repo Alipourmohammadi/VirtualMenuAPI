@@ -12,6 +12,7 @@ using VirtualMenuAPI.Data.Models.Users;
 using VirtualMenuAPI.Services.AuthServices;
 using VirtualMenuAPI.Services.BaristaServices;
 using VirtualMenuAPI.Services.ManagerServices;
+using VirtualMenuAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 // builder.WebHost.UseUrls("http://192.168.1.161:5058");
@@ -28,12 +29,13 @@ builder.Services.AddIdentityCore<Customer>()
   .AddEntityFrameworkStores<DataContext>()
   .AddDefaultTokenProviders();
 
-builder.Services.AddSingleton<WebSocketHandler>();
+//builder.Services.AddSingleton<WebSocketHandler>();
 //Services
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IBaristaService, BarsitaService>();
 builder.Services.AddScoped<IManagerService, ManagerService>();
+builder.Services.AddSingleton<IOrderQueueService, OrderQueueService>();
 
 //builder.Services.AddScoped<ICustomerAuthService>();
 
@@ -96,25 +98,25 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-app.UseWebSockets();
-app.Use(async (context, next) =>
-{
-  if (context.WebSockets.IsWebSocketRequest)
-  {
-    WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-    var handler = app.Services.GetService<WebSocketHandler>() ?? throw new Exception();
-    // var handler = new WebSocketHandler();
+//app.UseWebSockets();
+//app.Use(async (context, next) =>
+//{
+//  if (context.WebSockets.IsWebSocketRequest)
+//  {
+//    WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
+//    var handler = app.Services.GetService<WebSocketHandler>() ?? throw new Exception();
+//    // var handler = new WebSocketHandler();
 
-    // Now, you can use the shared instance of WebSocketHandler
-    handler.InitializeWebSocket(webSocket);
-    await handler.ReceiveDataAsync();
-  }
-  else
-  {
-    // throw new Exception("only websocket connections accepted");
-    await next();
-  }
-});
+//    // Now, you can use the shared instance of WebSocketHandler
+//    handler.InitializeWebSocket(webSocket);
+//    await handler.ReceiveDataAsync();
+//  }
+//  else
+//  {
+//    // throw new Exception("only websocket connections accepted");
+//    await next();
+//  }
+//});
 
 if (app.Environment.IsDevelopment())
 {

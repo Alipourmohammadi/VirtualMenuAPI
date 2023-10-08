@@ -9,7 +9,7 @@ namespace VirtualMenuAPI.Controllers
 {
   [ApiController]
   [Route("[controller]")]
-  [Authorize(Roles = UserRoles.Manager)]
+  //[Authorize(Roles = UserRoles.Manager)]
   public class ManagerController : ControllerBase
   {
     private readonly string _assetsFolderPath;
@@ -20,17 +20,19 @@ namespace VirtualMenuAPI.Controllers
       _assetsFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "assets");
       _managerService = managerService;
     }
+
+
+    //[AllowAnonymous]
+    [RequestSizeLimit(1_000_000_000)]
     [HttpPost("add-product")]
-    public async Task<IActionResult> AddNewProduct([FromBody] ProductIN product)
+    public async Task<IActionResult> AddNewProduct([FromForm] ProductInput product)
     {
-      
+
       if (!ModelState.IsValid)
-        return BadRequest("Invalid Product");
-      if (Request.Form.Files.Count == 0)
-        return BadRequest("No file uploaded.");
+        return BadRequest(ModelState);
       try
       {
-        var result = await _managerService.AddNewProduct(product, Request.Form.Files[0]);
+        var result = await _managerService.AddNewProduct(product);
         return Ok(result);
       }
       catch (Exception ex)
@@ -39,16 +41,14 @@ namespace VirtualMenuAPI.Controllers
       }
     }
     [HttpPost("add-category")]
-    public async Task<IActionResult> AddNewCategory([FromBody] CategoryIN category)
+    [RequestSizeLimit(1_000_000_000)]
+    public async Task<IActionResult> AddNewCategory([FromForm] CategoryInput category)
     {
-      //category = Request.Form["json"];
       if (!ModelState.IsValid)
-        return BadRequest("Invalid Product");
-      if (Request.Form.Files.Count == 0)
-        return BadRequest("No file uploaded.");
+        return BadRequest("Invalid Category");
       try
       {
-        var result = await _managerService.AddNewCategory(category, Request.Form.Files[0]);
+        var result = await _managerService.AddNewCategory(category);
         return Ok(result);
       }
       catch (Exception ex)
@@ -58,7 +58,7 @@ namespace VirtualMenuAPI.Controllers
     }
 
     [HttpDelete("remove-product/{id}")]
-    public async Task<IActionResult> RemovePoduct(int id)
+    public async Task<IActionResult> RemoveProduct(int id)
     {
       try
       {
