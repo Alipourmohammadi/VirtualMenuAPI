@@ -13,9 +13,10 @@ using VirtualMenuAPI.Services.AuthServices;
 using VirtualMenuAPI.Services.BaristaServices;
 using VirtualMenuAPI.Services.ManagerServices;
 using VirtualMenuAPI.Services;
+using VirtualMenuAPI.SSE.Middleware;
+using VirtualMenuAPI.SSEMiddleware.CustomerSSE;
 
 var builder = WebApplication.CreateBuilder(args);
-// builder.WebHost.UseUrls("http://192.168.1.161:5058");
 
 builder.Services.AddDbContext<DataContext>(options => { options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")); });
 
@@ -36,6 +37,7 @@ builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IBaristaService, BarsitaService>();
 builder.Services.AddScoped<IManagerService, ManagerService>();
 builder.Services.AddSingleton<IOrderQueueService, OrderQueueService>();
+builder.Services.AddSingleton<ISseHolder, CustomerHolder>();
 
 //builder.Services.AddScoped<ICustomerAuthService>();
 
@@ -124,12 +126,14 @@ if (app.Environment.IsDevelopment())
   app.UseSwaggerUI();
 }
 
+app.UseCors();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapSseHolder("/sse/customer");
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 
 app.MapControllers();
-app.UseCors();
 AppDbInitializer.SeedRolesToDb(app).Wait();
 await app.RunAsync();
 // app.Run();
