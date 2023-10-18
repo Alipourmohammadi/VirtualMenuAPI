@@ -10,9 +10,9 @@ namespace VirtualMenuAPI.Models
   }
   public enum OrderState
   {
-    OrderJustSet,
-    OrderInProgress,
-    OrderDone
+    OrderJustSet, //Initialized
+    OrderInProgress, //InProgress
+    OrderDone //Done
   }
   public class Order
   {
@@ -27,10 +27,23 @@ namespace VirtualMenuAPI.Models
     public ServeType ServeType { get; set; } = ServeType.Present;
 
     [Range(0, 2, ErrorMessage = "Out of Range!")]
-    public OrderState OrderState { get; set; }
+    public OrderState OrderState { get; set; } // State
     [Required]
     public List<OrderItem> Items { get; set; } = new();
     [JsonIgnore]
     public Customer Customer { get; set; } = new();
+
+    //public void InitializeOrder()
+    //{
+    //  OrderState = OrderState.OrderJustSet;
+    //}
+
+
+    //public void SetInProgress()
+    //{
+
+    //}
+
+
   }
 }

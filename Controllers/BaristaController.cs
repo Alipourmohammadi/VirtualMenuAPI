@@ -43,7 +43,7 @@ namespace VirtualMenuAPI.Controllers
       catch (Exception ex)
       {
 
-        return BadRequest(ex);
+        return BadRequest(ex.Message);
       }
     }
   }

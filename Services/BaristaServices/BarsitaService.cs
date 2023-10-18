@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using VirtualMenuAPI.Data;
 using VirtualMenuAPI.Data.Dtos;
+using VirtualMenuAPI.Data.Events;
 using VirtualMenuAPI.Data.Inputs;
 using VirtualMenuAPI.Dto;
 using VirtualMenuAPI.SSEMiddleware.CustomerSSE;
@@ -32,14 +33,16 @@ namespace VirtualMenuAPI.Services.BaristaServices
       if (order is null)
         throw new Exception("Order doesn't Exist");
       order.OrderState = orderStateIn.OrderState;
-      var OrderStatus = new SseOrderStatusDto()
+      // BestPractice: Raise event (OrderStatusUpdated)
+      //TODO: CONFIG camel case JsonSerializer in startup
+      var orderUpdatedEvent = new OrderStatusUpdatedEvent()
       {
-        Identity = order.Customer.Identity,
-        Message = orderStateIn.OrderState.ToString()
+        Id = order.Customer.Identity,
+        Status = orderStateIn.OrderState
       };
       try
       {
-        await _sseHolder.SendMessageAsync(OrderStatus);
+        await _sseHolder.SendMessageAsync(orderUpdatedEvent);
       }
       catch (Exception ex)
       {

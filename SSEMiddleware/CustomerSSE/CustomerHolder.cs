@@ -1,8 +1,10 @@
 ﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Collections.Concurrent;
 using System.Security.Claims;
 using System.Text.Json;
 using VirtualMenuAPI.Data.Dtos;
+using VirtualMenuAPI.Data.Events;
 
 namespace VirtualMenuAPI.SSEMiddleware.CustomerSSE
 {
@@ -11,6 +13,7 @@ namespace VirtualMenuAPI.SSEMiddleware.CustomerSSE
   {
     private readonly ILogger<CustomerHolder> logger;
     private readonly ConcurrentDictionary<string, SseClient> clients = new();
+
 
     public CustomerHolder(ILogger<CustomerHolder> logger,
         IHostApplicationLifetime applicationLifetime)
@@ -35,14 +38,34 @@ namespace VirtualMenuAPI.SSEMiddleware.CustomerSSE
         }
       }
     }
-    public async Task SendMessageAsync(SseOrderStatusDto orderStatus)
+    public async Task SendMessageAsync<T>(T @event) where T : SseEvent
     {
-      logger.LogWarning($"Send Message {orderStatus.Message}");
-      var c = clients.First(x => x.Key == orderStatus.Identity.ToString());
-      var messageJson = JsonSerializer.Serialize(orderStatus.Message);
-      await c.Value.Response.WriteAsync($"data: {messageJson}\r\r", c.Value.Cancel.Token);
-      await c.Value.Response.Body.FlushAsync(c.Value.Cancel.Token);
+      //logger.LogWarning($"Send Message {orderStatus.Message}");
+      if (clients.TryGetValue(@event.Id.ToString(), out var c))
+      {
+        var messageString = "Empty Message";
+        var messageProperty = typeof(T).GetProperty("Status");
+        if (messageProperty != null)
+        {
+          var messageValue = messageProperty.GetValue(@event);
+          messageString = JsonSerializer.Serialize(messageValue);
+        }
+        else
+        {
+          messageString = JsonSerializer.Serialize(@event);
+        }
+        await c.Response.WriteAsync($"data: {messageString}\r\r", c.Cancel.Token);
+        await c.Response.Body.FlushAsync(c.Cancel.Token);
+      }
+      else
+      {
+        // alert the barista that the user did not get the action
+        throw new Exception("user Doesn't Exist");
+      }
+
     }
+
+
     private async void EchoAsync(SseClient client)
     {
       try

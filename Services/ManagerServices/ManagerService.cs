@@ -33,6 +33,9 @@ namespace VirtualMenuAPI.Services.ManagerServices
       {
         throw new Exception($"Internal server error: {ex.Message}");
       }
+      var theCategory = await _dataContext.Categories.FirstOrDefaultAsync(x=>x.Id == productIn.CategoryId);
+      if (theCategory is null)
+        throw new Exception($"The category :{productIn.CategoryId} dose not Exist");
       var newProduct = new Product()
       {
         Image = imageString,
@@ -40,6 +43,7 @@ namespace VirtualMenuAPI.Services.ManagerServices
         Duration = productIn.Duration,
         Price = productIn.Price,
         CategoryId = productIn.CategoryId,
+        Category = theCategory
       };
       await _dataContext.Products.AddAsync(newProduct);
       await _dataContext.SaveChangesAsync();

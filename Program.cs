@@ -1,5 +1,5 @@
 
-using System.Net.WebSockets;
+//using System.Net.WebSockets;
 using VirtualMenuAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
@@ -15,6 +15,8 @@ using VirtualMenuAPI.Services.ManagerServices;
 using VirtualMenuAPI.Services;
 using VirtualMenuAPI.SSE.Middleware;
 using VirtualMenuAPI.SSEMiddleware.CustomerSSE;
+using System.Text.Json;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,9 +84,38 @@ builder.Services.AddAuthentication(options =>
 // builder.Services.AddSingleton<IOrderRepository, OrderRepository>();
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+  options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+});
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+  c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
+
+  // Add Bearer token authentication
+  c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+  {
+    Description = "JWT Authorization header using the Bearer scheme.",
+    Type = SecuritySchemeType.Http,
+    Scheme = "bearer"
+  });
+
+  c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
+        }
+    });
+});
 // Add this in the ConfigureServices method of Startup.cs
 builder.Services.AddCors(options =>
 {
@@ -120,6 +151,7 @@ var app = builder.Build();
 //  }
 //});
 
+
 if (app.Environment.IsDevelopment())
 {
   app.UseSwagger();
@@ -135,5 +167,5 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 AppDbInitializer.SeedRolesToDb(app).Wait();
-await app.RunAsync();
-// app.Run();
+//await app.RunAsync();
+app.Run();

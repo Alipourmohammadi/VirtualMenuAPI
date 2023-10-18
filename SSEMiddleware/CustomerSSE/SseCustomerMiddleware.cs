@@ -7,7 +7,6 @@ namespace VirtualMenuAPI.SSE.Middleware
   {
     public static IApplicationBuilder MapSseHolder(this IApplicationBuilder app, PathString path)
     {
-      //app.UseCors("allowAny");
       return app.Map(path, (app) => app.UseMiddleware<SseCustomerMiddleware>());
     }
   }

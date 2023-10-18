@@ -8,7 +8,7 @@ namespace VirtualMenuAPI.Data.Inputs
     private const string _errorMessage = "Out Of Range";
     public IFormFile Image { get; set; }
 
-    [StringLength(100, MinimumLength = 5, ErrorMessage = _errorMessage)]
+    [StringLength(100, MinimumLength = 1, ErrorMessage = _errorMessage)]
     public string Title { get; set; } = string.Empty;
 
     [Range(0, 10_000, ErrorMessage = _errorMessage)]

@@ -15,7 +15,7 @@ namespace VirtualMenuAPI.Data.Models
     public DateTime DateAdded { get; set; }
     public DateTime DateExpire { get; set; }
 
-    [StringLength(100, MinimumLength = 5, ErrorMessage = _errorMessage)]
+    [StringLength(450, MinimumLength = 1, ErrorMessage = _errorMessage)]
     public string UserId { get; set; } = string.Empty;
     [ForeignKey(nameof(UserId))]
     public Account User { get; set; } = new();
