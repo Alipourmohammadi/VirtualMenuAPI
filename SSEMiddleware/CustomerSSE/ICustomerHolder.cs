@@ -3,7 +3,7 @@ using VirtualMenuAPI.Data.Events;
 
 namespace VirtualMenuAPI.SSEMiddleware.CustomerSSE
 {
-  public interface ISseHolder
+  public interface ICustomerSseHolder
   {
     Task AddAsync(HttpContext context);
     Task SendMessageAsync<T>(T message) where T: SseEvent;

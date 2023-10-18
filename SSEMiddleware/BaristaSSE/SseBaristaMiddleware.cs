@@ -1,21 +1,22 @@
-﻿using VirtualMenuAPI.SSEMiddleware.CustomerSSE;
+﻿using System.Security.Claims;
+using VirtualMenuAPI.SSEMiddleware.CustomerSSE;
 
-namespace VirtualMenuAPI.SSE.MiddleWare
+namespace VirtualMenuAPI.SSEMiddleware.BaristaSSE
 {
 
-  public static class CustomerSseHolderMapper
+  public static class SseHolderMapper
   {
-    public static IApplicationBuilder MapCustomerSseHolder(this IApplicationBuilder app, PathString path)
+    public static IApplicationBuilder MapBaristaSseHolder(this IApplicationBuilder app, PathString path)
     {
-      return app.Map(path, (app) => app.UseMiddleware<SseCustomerMiddleware>());
+      return app.Map(path, (app) => app.UseMiddleware<SseBaristaMiddleware>());
     }
   }
-  public class SseCustomerMiddleware
+  public class SseBaristaMiddleware
   {
     private readonly RequestDelegate next;
-    private readonly ICustomerSseHolder sse;
-    public SseCustomerMiddleware(RequestDelegate next,
-        ICustomerSseHolder sse)
+    private readonly IBaristaSseHolder sse;
+    public SseBaristaMiddleware(RequestDelegate next,
+        IBaristaSseHolder sse)
     {
       this.next = next;
       this.sse = sse;
@@ -24,7 +25,7 @@ namespace VirtualMenuAPI.SSE.MiddleWare
     {
       if (context.User.Identity != null && context.User.Identity.IsAuthenticated)
       {
-        if (context.User.IsInRole("Customer"))
+        if (context.User.IsInRole("Barista"))
         {
           await sse.AddAsync(context);
         }

@@ -13,10 +13,11 @@ using VirtualMenuAPI.Services.AuthServices;
 using VirtualMenuAPI.Services.BaristaServices;
 using VirtualMenuAPI.Services.ManagerServices;
 using VirtualMenuAPI.Services;
-using VirtualMenuAPI.SSE.Middleware;
+using VirtualMenuAPI.SSE.MiddleWare;
 using VirtualMenuAPI.SSEMiddleware.CustomerSSE;
 using System.Text.Json;
 using Microsoft.OpenApi.Models;
+using VirtualMenuAPI.SSEMiddleware.BaristaSSE;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,7 +40,8 @@ builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IBaristaService, BarsitaService>();
 builder.Services.AddScoped<IManagerService, ManagerService>();
 builder.Services.AddSingleton<IOrderQueueService, OrderQueueService>();
-builder.Services.AddSingleton<ISseHolder, CustomerHolder>();
+builder.Services.AddSingleton<ICustomerSseHolder, CustomerHolder>();
+builder.Services.AddSingleton<IBaristaSseHolder, BaristaHolder>();
 
 //builder.Services.AddScoped<ICustomerAuthService>();
 
@@ -161,7 +163,8 @@ if (app.Environment.IsDevelopment())
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapSseHolder("/sse/customer");
+app.MapCustomerSseHolder("/sse/customer");
+app.MapBaristaSseHolder("/sse/barista");
 app.UseHttpsRedirection();
 
 

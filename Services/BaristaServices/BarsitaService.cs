@@ -12,9 +12,9 @@ namespace VirtualMenuAPI.Services.BaristaServices
   public class BarsitaService : IBaristaService
   {
     private readonly DataContext _Context;
-    private readonly ISseHolder _sseHolder;
+    private readonly ICustomerSseHolder _sseHolder;
 
-    public BarsitaService(DataContext dataContext, ISseHolder sseHolder)
+    public BarsitaService(DataContext dataContext, ICustomerSseHolder sseHolder)
     {
       _Context = dataContext;
       _sseHolder = sseHolder;

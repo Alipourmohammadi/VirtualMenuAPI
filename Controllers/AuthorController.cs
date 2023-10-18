@@ -20,7 +20,7 @@ namespace VirtualMenuAPI.Controllers
     }
 
     [HttpPost("Add-Barista")]
-    [Authorize(Roles = UserRoles.Manager)]
+    //[Authorize(Roles = UserRoles.Manager)]
     public async Task<IActionResult> RegisterBarista(BaristaInfoIN baristaInfo)
     {
       if (!ModelState.IsValid)

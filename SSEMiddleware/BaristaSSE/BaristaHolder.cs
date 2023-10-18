@@ -6,16 +6,16 @@ using System.Text.Json;
 using VirtualMenuAPI.Data.Dtos;
 using VirtualMenuAPI.Data.Events;
 
-namespace VirtualMenuAPI.SSEMiddleware.CustomerSSE
+namespace VirtualMenuAPI.SSEMiddleware.BaristaSSE
 {
   public record SseClient(HttpResponse Response, CancellationTokenSource Cancel);
-  public class CustomerHolder : ICustomerSseHolder
+  public class BaristaHolder : IBaristaSseHolder
   {
-    private readonly ILogger<CustomerHolder> logger;
+    private readonly ILogger<BaristaHolder> logger;
     private readonly ConcurrentDictionary<string, SseClient> clients = new();
 
 
-    public CustomerHolder(ILogger<CustomerHolder> logger,
+    public BaristaHolder(ILogger<BaristaHolder> logger,
         IHostApplicationLifetime applicationLifetime)
     {
       this.logger = logger;
@@ -23,36 +23,33 @@ namespace VirtualMenuAPI.SSEMiddleware.CustomerSSE
     }
     public async Task AddAsync(HttpContext context)
     {
-      var clientId = context.User.FindFirstValue("Identity");
-      if (clientId is not null)
+      var clientId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+      if (clientId is null)
       {
-        var cancel = new CancellationTokenSource();
-        var client = new SseClient(Response: context.Response, Cancel: cancel);
-        logger.LogError($"New Client added, {clientId}");
-        if (clients.TryAdd(clientId, client))
-        {
-          EchoAsync(client);
-          context.RequestAborted.WaitHandle.WaitOne();
-          RemoveClient(clientId);
-          await Task.FromResult(true);
-        }
+        context.Response.StatusCode = 401;
+        await context.Response.WriteAsync("Unauthorized");
+        return;
+      }
+      var cancel = new CancellationTokenSource();
+      var client = new SseClient(Response: context.Response, Cancel: cancel);
+      logger.LogError($"New Client added, {clientId}");
+      if (clients.TryAdd(clientId, client))
+      {
+        EchoAsync(client);
+        context.RequestAborted.WaitHandle.WaitOne();
+        RemoveClient(clientId);
+        await Task.FromResult(true);
       }
     }
     public async Task SendMessageAsync<T>(T @event) where T : SseEvent
     {
-      //logger.LogWarning($"Send Message {orderStatus.Message}");
-      if (clients.TryGetValue(@event.Id.ToString(), out var c))
-      {
-        var messageString = JsonSerializer.Serialize(@event.GetContent());
-        await c.Response.WriteAsync($"data: {messageString}\r\r", c.Cancel.Token);
-        await c.Response.Body.FlushAsync(c.Cancel.Token);
-      }
-      else
-      {
-        // alert the barista that the user did not get the action
-        throw new Exception("user Doesn't Exist");
-      }
 
+      foreach (var c in clients)
+      {
+        //var messageJson = JsonSerializer.Serialize(@event.GetContent());
+        await c.Value.Response.WriteAsync($"data: {@event.GetContent()}\r\r", c.Value.Cancel.Token);
+        await c.Value.Response.Body.FlushAsync(c.Value.Cancel.Token);
+      }
     }
 
 
@@ -60,7 +57,7 @@ namespace VirtualMenuAPI.SSEMiddleware.CustomerSSE
     {
       try
       {
-        var clientIdJson = JsonSerializer.Serialize("hello there");
+        var clientIdJson = JsonSerializer.Serialize("hi Barista");
         client.Response.Headers.Add("Content-Type", "text/event-stream");
         client.Response.Headers.Add("Cache-Control", "no-cache");
         client.Response.Headers.Add("Connection", "keep-alive");
