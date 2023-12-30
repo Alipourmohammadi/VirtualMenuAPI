@@ -37,7 +37,7 @@ namespace VirtualMenuAPI.Controllers
     }
     [HttpGet("hello")]
     //[Authorize(Roles = UserRoles.Manager)]
-    public async Task<IActionResult> ok(BaristaInfoIN baristaInfo)
+    public async Task<IActionResult> ok()
     {
       return Ok("HELLO");
     }
