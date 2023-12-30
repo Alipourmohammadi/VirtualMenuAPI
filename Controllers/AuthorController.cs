@@ -35,7 +35,6 @@ namespace VirtualMenuAPI.Controllers
         return BadRequest(ex.Message);
       }
     }
-    [HttpGet("hello")]
     //[Authorize(Roles = UserRoles.Manager)]
 
     [HttpPost("login-user")]
