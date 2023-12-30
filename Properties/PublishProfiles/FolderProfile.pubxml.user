@@ -4,7 +4,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 -->
 <Project>
   <PropertyGroup>
-    <History>True|2023-10-15T19:52:47.3331621Z;False|2023-10-15T23:21:58.2711534+03:30;</History>
+    <History>True|2023-12-22T21:21:08.1974894Z;True|2023-12-22T16:36:37.1462213+03:30;True|2023-10-15T23:22:47.3331621+03:30;False|2023-10-15T23:21:58.2711534+03:30;</History>
     <LastFailureDetails />
     <_PublishTargetUrl>C:\projects\digi-menu\code-source\VirtualMenuAPI\bin\Release\net7.0\publish\</_PublishTargetUrl>
   </PropertyGroup>

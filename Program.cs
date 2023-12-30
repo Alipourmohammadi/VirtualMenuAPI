@@ -18,6 +18,9 @@ using VirtualMenuAPI.SSEMiddleware.CustomerSSE;
 using System.Text.Json;
 using Microsoft.OpenApi.Models;
 using VirtualMenuAPI.SSEMiddleware.BaristaSSE;
+using VirtualMenuAPI.Data.Helpers;
+using VirtualMenuAPI.Data.Inputs;
+using VirtualMenuAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -154,18 +157,18 @@ var app = builder.Build();
 //});
 
 
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
   app.UseSwagger();
   app.UseSwaggerUI();
-}
+//}
 
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapCustomerSseHolder("/sse/customer");
 app.MapBaristaSseHolder("/sse/barista");
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 
 app.MapControllers();

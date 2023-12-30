@@ -9,6 +9,10 @@ namespace VirtualMenuAPI.Data
 {
   public class DataContext : IdentityDbContext<Account>
   {
+    //public DataContext()
+    //{
+    //}
+
     public DataContext(DbContextOptions<DataContext> options) : base(options)
     {
 
