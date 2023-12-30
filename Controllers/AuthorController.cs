@@ -35,6 +35,13 @@ namespace VirtualMenuAPI.Controllers
         return BadRequest(ex.Message);
       }
     }
+    [HttpGet("hello")]
+    //[Authorize(Roles = UserRoles.Manager)]
+    public async Task<IActionResult> ok(BaristaInfoIN baristaInfo)
+    {
+      return Ok("HELLO");
+    }
+
 
     [HttpPost("login-user")]
     public async Task<IActionResult> Login([FromBody] LoginIN loginVM)
