@@ -9,7 +9,7 @@ namespace VirtualMenuAPI.Controllers
 {
   [ApiController]
   [Route("[controller]")]
-  //[Authorize(Roles = UserRoles.Manager)]
+  [Authorize(Roles = UserRoles.Manager)]
   public class ManagerController : ControllerBase
   {
     private readonly string _assetsFolderPath;

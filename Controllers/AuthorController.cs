@@ -20,7 +20,7 @@ namespace VirtualMenuAPI.Controllers
     }
 
     [HttpPost("Add-Barista")]
-    //[Authorize(Roles = UserRoles.Manager)]
+    [Authorize(Roles = UserRoles.Manager)]
     public async Task<IActionResult> RegisterBarista(BaristaInfoIN baristaInfo)
     {
       if (!ModelState.IsValid)
@@ -35,7 +35,6 @@ namespace VirtualMenuAPI.Controllers
         return BadRequest(ex.Message);
       }
     }
-    [HttpGet("hello")]
     //[Authorize(Roles = UserRoles.Manager)]
 
     [HttpPost("login-user")]
@@ -58,9 +57,15 @@ namespace VirtualMenuAPI.Controllers
     {
       if (!ModelState.IsValid)
         return BadRequest("please provide All required fields");
-
-      var result = await _authService.RefreshToken(tokenRequest);
-      return Ok(result);
+      try
+      {
+        var result = await _authService.RefreshToken(tokenRequest);
+        return Ok(result);
+      }
+      catch (Exception ex)
+      {
+        return BadRequest(ex.Message);
+      }
     }
 
     [HttpGet("new-customer")]

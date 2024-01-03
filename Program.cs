@@ -53,12 +53,11 @@ var tokenValidationParameters = new TokenValidationParameters()
 {
   ValidateIssuerSigningKey = true,
   IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration.GetSection("JWT:Secret").Value!)),
-
   ValidateIssuer = true,
   ValidIssuer = builder.Configuration.GetSection("JWT:Issuer").Value,
 
   ValidateAudience = false,
-
+  
   ValidateLifetime = true,
   ClockSkew = TimeSpan.Zero
 };
@@ -72,19 +71,7 @@ builder.Services.AddAuthentication(options =>
 {
   options.SaveToken = true;
   options.RequireHttpsMetadata = false;
-  options.TokenValidationParameters = new TokenValidationParameters()
-  {
-    ValidateIssuerSigningKey = true,
-    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration.GetSection("JWT:Secret").Value!)),
-
-    ValidateIssuer = true,
-    ValidIssuer = builder.Configuration.GetSection("JWT:Issuer").Value,
-
-    ValidateAudience = false,
-
-    ValidateLifetime = true,
-    ClockSkew = TimeSpan.Zero
-  }; ;
+  options.TokenValidationParameters = tokenValidationParameters;
 });
 // builder.Services.AddSingleton<IOrderRepository, OrderRepository>();
 

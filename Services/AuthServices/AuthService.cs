@@ -50,16 +50,23 @@ namespace VirtualMenuAPI.Services.AuthServices
       if (userExists != null && await _userManager.CheckPasswordAsync(userExists, loginVM.Password))
       {
         var TokenValue = await GenerateJWTTokenAsync(userExists, null);
-        var isCustomer = await _userManager.IsInRoleAsync(userExists, "Customer");
+        //var isCustomer = await _userManager.IsInRoleAsync(userExists, "Customer");
 
         return TokenValue;
       }
-      throw new Exception("user name or Password is wrong");
+      throw new Exception("userName or Password is wrong");
     }
     public async Task<AuthResultDto> RefreshToken(TokenRequestIN tokenRequest)
     {
-      var result = await VerifyAndGenerateTokenAsync(tokenRequest);
-      return result;
+      try
+      {
+        var result = await VerifyAndGenerateTokenAsync(tokenRequest);
+        return result;
+      }
+      catch (Exception ex)
+      {
+        throw new Exception(ex.Message);
+      }
     }
     public async Task<AuthResultDto> AddNewCustomer()
     {
@@ -117,6 +124,7 @@ namespace VirtualMenuAPI.Services.AuthServices
 
       var dbUser = await _userManager.FindByIdAsync(storedToken.UserId);
       if (dbUser == null) throw new Exception("Token dose not exist");
+      if (storedToken.IsRevoked) throw new Exception("Token is not valid");
       try
       {
         var tokenCheckResult = jwtTokenHandler.ValidateToken(tokenRequest.Token, _tokenValidationParameters, out var validatedToken);
@@ -172,6 +180,12 @@ namespace VirtualMenuAPI.Services.AuthServices
         };
         return rTokenResponse;
       }
+
+      var prevToken = await _context.RefreshTokens.FirstOrDefaultAsync(x => x.User == user);
+
+      if (prevToken != null)
+        prevToken.IsRevoked = true;
+
       var refreshToken = new RefreshToken()
       {
         IsRevoked = false,
@@ -181,6 +195,7 @@ namespace VirtualMenuAPI.Services.AuthServices
         Token = Guid.NewGuid().ToString() + "-" + Guid.NewGuid().ToString(),
         User = user
       };
+
       await _context.RefreshTokens.AddAsync(refreshToken);
       await _context.SaveChangesAsync();
 

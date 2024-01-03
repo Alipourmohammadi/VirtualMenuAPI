@@ -11,7 +11,7 @@ namespace VirtualMenuAPI.Data.Models
     public int Id { get; set; }
     [StringLength(600, MinimumLength = 5, ErrorMessage = _errorMessage)]
     public string Token { get; set; } = string.Empty;
-    public bool IsRevoked { get; set; }
+    public bool IsRevoked { get; set; } = false;
     public DateTime DateAdded { get; set; }
     public DateTime DateExpire { get; set; }
 
