@@ -40,6 +40,7 @@ namespace VirtualMenuAPI.Controllers
         return BadRequest(ex.Message);
       }
     }
+    
     [HttpPost("add-category")]
     [RequestSizeLimit(1_000_000_000)]
     public async Task<IActionResult> AddNewCategory([FromForm] CategoryInput category)
@@ -49,6 +50,22 @@ namespace VirtualMenuAPI.Controllers
       try
       {
         var result = await _managerService.AddNewCategory(category);
+        return Ok(result);
+      }
+      catch (Exception ex)
+      {
+        return BadRequest(ex.Message);
+      }
+    }
+    [HttpPut("update-product/{id}")]
+    [RequestSizeLimit(1_000_000_000)]
+    public async Task<IActionResult> updateProduct(int id,[FromForm] ProductInput product)
+    {
+      if (!ModelState.IsValid)
+        return BadRequest("Invalid Category");
+      try
+      {
+        var result = await _managerService.UpdateProduct(id,product);
         return Ok(result);
       }
       catch (Exception ex)
@@ -70,6 +87,7 @@ namespace VirtualMenuAPI.Controllers
         return BadRequest(ex.Message);
       }
     }
+    
     [HttpDelete("remove-category/{id}")]
     public async Task<IActionResult> RemoveCategory(int id)
     {
@@ -83,5 +101,7 @@ namespace VirtualMenuAPI.Controllers
         return BadRequest(ex.Message);
       }
     }
+
+
   }
 }

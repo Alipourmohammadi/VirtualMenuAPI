@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using VirtualMenuAPI.Data;
 using VirtualMenuAPI.Data.Inputs;
 using VirtualMenuAPI.Models;
@@ -33,7 +34,7 @@ namespace VirtualMenuAPI.Services.ManagerServices
       {
         throw new Exception($"Internal server error: {ex.Message}");
       }
-      var theCategory = await _dataContext.Categories.FirstOrDefaultAsync(x=>x.Id == productIn.CategoryId);
+      var theCategory = await _dataContext.Categories.FirstOrDefaultAsync(x => x.Id == productIn.CategoryId);
       if (theCategory is null)
         throw new Exception($"The category :{productIn.CategoryId} dose not Exist");
       var newProduct = new Product()
@@ -77,6 +78,45 @@ namespace VirtualMenuAPI.Services.ManagerServices
       await _dataContext.Categories.AddAsync(newCategory);
       await _dataContext.SaveChangesAsync();
       return newCategory;
+    }
+    public async Task<Product> UpdateProduct(int id, ProductInput productIn)
+    {
+      var result = await _dataContext.Products.FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("Product doesn't Exist");
+      var filePath1 = Path.Combine(_assetsFolderPath, result.Image);
+      if (!File.Exists(filePath1))
+        throw new Exception("file doesn't Exist");
+      File.SetAttributes(filePath1, FileAttributes.Normal);
+      File.Delete(filePath1);
+      string imageString;
+      try
+      {
+        if (!Directory.Exists(_assetsFolderPath))
+          Directory.CreateDirectory(_assetsFolderPath);
+
+        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(productIn.Image.FileName)}";
+        imageString = fileName;
+        var filePath = Path.Combine(_assetsFolderPath, fileName);
+
+        using var stream = new FileStream(filePath, FileMode.Create);
+        await productIn.Image.CopyToAsync(stream);
+      }
+      catch (Exception ex)
+      {
+        throw new Exception($"Internal server error: {ex.Message}");
+      }
+      var theCategory = await _dataContext.Categories.FirstOrDefaultAsync(x => x.Id == productIn.CategoryId);
+      if (theCategory is null)
+        throw new Exception($"The category :{productIn.CategoryId} dose not Exist");
+
+      result.Image = imageString;
+      result.Title = productIn.Title;
+      result.Duration = productIn.Duration;
+      result.Price = productIn.Price;
+      result.CategoryId = productIn.CategoryId;
+      result.Category = theCategory;
+
+      await _dataContext.SaveChangesAsync();
+      return result;
     }
     public async Task RemoveProduct(int id)
     {

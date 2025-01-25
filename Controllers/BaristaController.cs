@@ -18,7 +18,7 @@ namespace VirtualMenuAPI.Controllers
       _baristaService = baristaService;
     }
 
-    [HttpGet]
+    [HttpGet("getOrders")]
     public async Task<IActionResult> GetOrders()
     {
       try
@@ -31,7 +31,7 @@ namespace VirtualMenuAPI.Controllers
         return BadRequest(ex);
       }
     }
-    [HttpPost]
+    [HttpPost("orderState")]
     public async Task<IActionResult> ChangeOrderState([FromBody] OrderStateIN orderStateIn)
     {
       if (!ModelState.IsValid) return BadRequest("Invalid model");

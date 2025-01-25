@@ -184,8 +184,10 @@ namespace VirtualMenuAPI.Services.AuthServices
       var prevToken = await _context.RefreshTokens.FirstOrDefaultAsync(x => x.User == user);
 
       if (prevToken != null)
+      {
         prevToken.IsRevoked = true;
-
+        _context.RefreshTokens.Update(prevToken);
+      }
       var refreshToken = new RefreshToken()
       {
         IsRevoked = false,
@@ -195,7 +197,6 @@ namespace VirtualMenuAPI.Services.AuthServices
         Token = Guid.NewGuid().ToString() + "-" + Guid.NewGuid().ToString(),
         User = user
       };
-
       await _context.RefreshTokens.AddAsync(refreshToken);
       await _context.SaveChangesAsync();
 
